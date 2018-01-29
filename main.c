@@ -1,7 +1,6 @@
 /*
 ** EPITECH PROJECT, 2018
-** lib malloc
+** main test
 ** File description:
-** realloc source code
+** test man for the malloc library
 */
-

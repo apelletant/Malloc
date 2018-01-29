@@ -16,10 +16,15 @@ CFLAGS	= -I ./include/
 ARCHV	= ar rc
 
 SRCS	= main.c		\
+	  src/block.c		\
+	  src/free.c		\
+	  src/malloc.c		\
+	  src/malloc_align.c	\
+	  src/show_mem_alloc.c	\
 
 OBJS	= $(SRCS:.c=.o)
 
-NAME 	= libmy.a
+NAME 	= libmy_malloc.so
 
 all:	$(NAME)
 

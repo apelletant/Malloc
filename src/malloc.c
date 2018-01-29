@@ -9,44 +9,52 @@
 #include <unistd.h>
 #include "malloc.h"
 
-t_block *find_free_space(t_block *head, t_block **last_block, size_t size)
-{
-	t_block *tmp = head;
+void *g_head = NULL;
 
-	while (tmp) {
-		if (tmp->free && tmp->size >= size) {
-			return (tmp);
-		}
-		tmp->prev = tmp;
+static t_block *find_block(t_block **last, size_t size)
+{
+	t_block *tmp = g_head;
+
+	while (tmp && !(tmp->free && tmp->size >= size)) {
+		*last = tmp;
 		tmp = tmp->next;
 	}
-	return (NULL);
+	return (tmp);
 }
 
-t_block *get_more_space(t_block *last_block, size_t size)
+int validate_ptr_address(void *ptr)
+{
+	if (g_head) {
+		if (ptr > g_head && ptr < sbrk(0)) {
+			return (ptr == (get_block_by_ptr_address(ptr))->ptr);
+		}
+	}
+	return (0);
+}
+
+void *malloc(size_t size)
 {
 	t_block *new_block = NULL;
-	void *request;
+	t_block *last = NULL;
+	size_t position = align_pointer(size);
 
-	new_block = sbrk(0);
-	request = sbrk(size + BLOCK_SIZE);
-	if (request == (void *) -1)
-		return (NULL);
-	if (last_block) {
-		last_block->prev = last_block;
-		last_block->next = new_block;
+	if (g_head) {
+		last = g_head;
+		new_block = find_block(&last, size);
+		if (new_block) {
+			if (new_block->size - position >= BLOCK_SIZE + 4)
+				split_bigger_block(new_block, position);
+			new_block->free = 0;
+		} else {
+			new_block = extend_block_size(last, position);
+			if (!new_block)
+				return (NULL);
+		}
+	} else {
+		new_block = extend_block_size(NULL, position);
+		if (!new_block)
+			return (NULL);
+		g_head = new_block;
 	}
-        new_block->size = size;
-	new_block->next = NULL;
-	new_block->prev = last_block;
-	new_block->free = 0;
-	return (new_block);
-}
-
-void	*malloc(size_t size)
-{
-	
-	if (size == 0)
-		return NULL;
-	return (ptr);
+	return (new_block->data);
 }
