@@ -10,26 +10,15 @@
 
 int main()
 {
-	int i = 0;
-	char **tab;
+	int *tab;
 
-	tab = malloc(sizeof(char *) * 5);
-	tab[0] = malloc(sizeof(char) * (7 + 1));
-	tab[0] = "bonjour";
-	tab[1] = malloc(sizeof(char) * (3 + 1));
-	tab[1] = "les";
-	tab[2] = malloc(sizeof(char) * (4 + 1));
-	tab[2] = "gens";
-	tab[3] = malloc(sizeof(char) * (7 + 1));
-	tab[3] = "Antoine";
-	tab[4] = malloc(sizeof(char) * (7 + 1));
-	tab[4] = "Kellian";
 
-	while (i < 5) {
-		printf("%s\n", tab[i]);
-		free(tab[i]);
-		++i;
-	}
-	free(tab);
+	tab = malloc(sizeof(int) * 5000);
+	tab[0] = 1;
+	tab[1] = 2;
+	tab[2] = 3;
+	tab[4999] = 4;
+	printf("%d %d %d\n", tab[0], tab[1], tab[4999]);
+
 	return (0);
 }
