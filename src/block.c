@@ -8,8 +8,6 @@
 #include <unistd.h>
 #include "malloc.h"
 
-void *g_head = NULL;
-
 t_block *block_union(t_block *block)
 {
 	if (block->next && block->next->free) {
@@ -65,4 +63,18 @@ t_block *get_block_by_ptr_address(void *ptr)
 	tmp = ptr;
 	ptr = tmp -= BLOCK_SIZE;
 	return (ptr);
+}
+
+void get_block_copy(t_block *src_block, t_block *dst_block)
+{
+	size_t index = 0;
+	int *src_data = NULL;
+	int *dst_data = NULL;
+
+	src_data = src_block->ptr;
+	dst_data = dst_block->ptr;
+	while (index * 4 < src_block->size && index * 4 < dst_block->size ) {
+		dst_data[index] = src_data[index];
+		index++;
+	}
 }

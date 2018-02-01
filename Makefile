@@ -14,7 +14,7 @@ CP	=	cp -rf
 ARCHV	=	ar cr
 
 CFLAGS	=	-I ./include/	\
-		-W -Werror -Wall -Wextra	\
+		-W -Wall -Wextra	\
 		-fPIC
 
 NAME 	=	libmy_malloc.so
@@ -25,6 +25,7 @@ SRCS	=	main.c			\
 		src/malloc.c		\
 		src/malloc_align.c	\
 		src/show_mem_alloc.c	\
+#		src/realloc.c
 
 OBJS	=	$(SRCS:.c=.o)
 

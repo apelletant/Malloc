@@ -7,9 +7,11 @@
 
 #include <stddef.h>
 #include <unistd.h>
+#include <pthread.h>
 #include "malloc.h"
 
 void *g_head = NULL;
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static t_block *find_block(t_block **last, size_t size)
 {
@@ -38,6 +40,7 @@ void *malloc(size_t size)
 	t_block *last = NULL;
 	size_t position = align_pointer(size);
 
+	pthread_mutex_lock(&mutex);
 	if (g_head) {
 		last = g_head;
 		new_block = find_block(&last, size);
@@ -47,14 +50,19 @@ void *malloc(size_t size)
 			new_block->free = 0;
 		} else {
 			new_block = extend_block_size(last, position);
-			if (!new_block)
+			if (!new_block) {
+				pthread_mutex_unlock(&mutex);
 				return (NULL);
+			}
 		}
 	} else {
 		new_block = extend_block_size(NULL, position);
-		if (!new_block)
+		if (!new_block){
+			pthread_mutex_unlock(&mutex);
 			return (NULL);
+		}
 		g_head = new_block;
 	}
+	pthread_mutex_unlock(&mutex);
 	return (new_block->data);
 }

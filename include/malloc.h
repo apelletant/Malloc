@@ -10,7 +10,7 @@
 
 #include <stddef.h>
 
-//void *g_head;
+void *g_head;
 
 typedef struct __attribute__((__packed__)) s_block
 {
@@ -18,12 +18,12 @@ typedef struct __attribute__((__packed__)) s_block
 	struct s_block *prev;
 	size_t size;
 	void *ptr;
-	char data[1];
 	int free;
+	char data[1];
 } t_block;
 
 #ifndef BLOCK_SIZE_
-	#define BLOCK_SIZE sizeof(t_block)
+	#define BLOCK_SIZE 40
 #endif /* BLOC_SIZE_ */
 
 	void *find_head();
@@ -39,5 +39,7 @@ typedef struct __attribute__((__packed__)) s_block
 	void	show_alloc_mem();
 	void	*malloc(size_t size);
 	int 	validate_ptr_address(void *ptr);
-
+	void	*realloc(void *ptr, size_t size);
+	void	get_block_copy(t_block *src_block, t_block *dst_block);
+	void *realloc(void *ptr, size_t size);
 #endif /* MALLOC_H_ */

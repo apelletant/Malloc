@@ -9,5 +9,5 @@
 
 size_t align_pointer(size_t size)
 {
-	return ((((size - 1) / 4 ) * 4) + 4);
+	return ((size + 3) & ~3);
 }

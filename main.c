@@ -5,20 +5,16 @@
 ** test main for the malloc library
 */
 
-#include <stdio.h>
-#include "malloc.h"
+#include "include/malloc.h"
 
 int main()
 {
-	int *tab;
+	int *tab = NULL;
+	char *str = NULL;
 
-
-	tab = malloc(sizeof(int) * 5000);
-	tab[0] = 1;
-	tab[1] = 2;
-	tab[2] = 3;
-	tab[4999] = 4;
-	printf("%d %d %d\n", tab[0], tab[1], tab[4999]);
+	tab = malloc(sizeof(int) * 10);
+	str = malloc(sizeof(char *) * 10);
+        show_alloc_mem();
 
 	return (0);
 }
