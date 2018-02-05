@@ -1,39 +1,49 @@
 /*
 ** EPITECH PROJECT, 2018
-** my_malloc
+** malloc
 ** File description:
 ** realloc function
 */
 
-#include <stddef.h>
-#include <string.h>
-#include <pthread.h>
-#include "malloc.h"
+#include <unistd.h>
 
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+#include <string.h>
+#include "malloc.h"
 
 void *realloc(void *ptr, size_t size)
 {
-/*	size_t new_size = align_pointer(size);
-	t_block *tmp_block = NULL;
+/*	void *tmp;
+	block_t *new_block = NULL;
 
-	pthread_mutex_lock(&mutex);
-	if (!ptr) {
-		pthread_mutex_unlock(&mutex);
-		return (malloc(new_size));
-	}
-	else if (size <= 0) {
+	if (!ptr)
+		return (malloc(size));
+	if (size == 0 && ptr != NULL) {
 		free(ptr);
-	} else {
-		tmp_block = malloc(new_size);
-		if (!tmp_block) {
-		pthread_mutex_unlock(&mutex);
-			return (NULL);
-		} else {
-			memcpy(ptr, tmp_block, new_size);
-			free(ptr);
-		}
+		return (NULL);
 	}
-	pthread_mutex_unlock(&mutex);*/
-	return (malloc(size));
+	new_block = (block_t*)ptr - 1;
+	if (new_block->size >= size)
+		return (ptr);
+	tmp = malloc(size);
+	if (tmp) {
+		memcpy(tmp, ptr, new_block->size);
+		free(ptr);
+	}
+	return (tmp);*/
+	block_t *block_tmp = (block_t *)ptr -1;
+        void *new_ptr = NULL;
+
+	if (!ptr) {
+		return (malloc(size));
+	}
+	if (block_tmp->size >= size) {
+		return block_tmp;
+	}
+	new_ptr = malloc(size);
+	if (!new_ptr) {
+		return (NULL);
+	}
+	memcpy(new_ptr, ptr, block_tmp->size);
+	free(ptr);
+	return (new_ptr);
 }

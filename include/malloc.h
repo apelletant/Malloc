@@ -10,36 +10,26 @@
 
 #include <stddef.h>
 
-void *g_head;
-
-typedef struct __attribute__((__packed__)) s_block
+typedef struct  block_s
 {
-	struct s_block *next;
-	struct s_block *prev;
 	size_t size;
-	void *ptr;
 	int free;
-	char data[1];
-} t_block;
+	struct block_s *next;
+} block_t;
+
+block_t *g_head;
+block_t *g_last;
 
 #ifndef BLOCK_SIZE_
-	#define BLOCK_SIZE 40
+	#define BLOCK_SIZE sizeof(block_t)
 #endif /* BLOC_SIZE_ */
 
-	void *find_head();
-
-	size_t	align_pointer(size_t size);
-	t_block	*extend_block_size(t_block *last, size_t size);
-	t_block	*get_block_by_ptr_address(void *ptr);
-
-	t_block	*block_union(t_block *block);
-
-	void	split_bigger_block(t_block *block, size_t size);
-	void	free(void *ptr);
+	size_t	align_size(size_t size);
+	block_t *get_empty_block(size_t size);
+	block_t *extend_memmory(block_t *block, void *ptr, size_t size);
 	void	show_alloc_mem();
 	void	*malloc(size_t size);
-	int 	validate_ptr_address(void *ptr);
+	void	free(void *ptr);
 	void	*realloc(void *ptr, size_t size);
-	void	get_block_copy(t_block *src_block, t_block *dst_block);
-	void *realloc(void *ptr, size_t size);
+
 #endif /* MALLOC_H_ */

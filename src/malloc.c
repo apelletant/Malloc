@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2018
-** lib malloc
+** malloc lib
 ** File description:
-** malloc source code
+** malloc
 */
 
 #include <stddef.h>
@@ -10,59 +10,59 @@
 #include <pthread.h>
 #include "malloc.h"
 
-void *g_head = NULL;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static t_block *find_block(t_block **last, size_t size)
+block_t *extend_memmory(block_t *block, void *ptr, size_t size)
 {
-	t_block *tmp = g_head;
-
-	while (tmp && !(tmp->free && tmp->size >= size)) {
-		*last = tmp;
-		tmp = tmp->next;
-	}
-	return (tmp);
+	block = ptr;
+	block->size = size;
+	block->free = 0;
+	block->next = NULL;
+	if (!g_head)
+		g_head = block;
+	if (g_last)
+		g_last->next = block;
+	g_last = block;
+	return (block);
 }
 
-int validate_ptr_address(void *ptr)
+block_t *get_empty_block(size_t size)
 {
-	if (g_head) {
-		if (ptr > g_head && ptr < sbrk(0)) {
-			return (ptr == (get_block_by_ptr_address(ptr))->ptr);
+	block_t *tmp = g_head;
+
+	while (tmp) {
+		if (tmp->free == 1 && tmp->size >= size) {
+			tmp->free = 0;
+			return ((void*)(tmp + 1));
 		}
+		tmp = tmp->next;
 	}
-	return (0);
+	return (NULL);
+}
+
+size_t align_size(size_t size)
+{
+	return ((size + 3) & ~3);
 }
 
 void *malloc(size_t size)
 {
-	t_block *new_block = NULL;
-	t_block *last = NULL;
-	size_t position = align_pointer(size);
+	void *ptr = NULL;
+	block_t *new_block = NULL;
+	size_t new_size = align_size(size);
 
-	pthread_mutex_lock(&mutex);
-	if (g_head) {
-		last = g_head;
-		new_block = find_block(&last, size);
-		if (new_block) {
-			if (new_block->size - position >= BLOCK_SIZE + 4)
-				split_bigger_block(new_block, position);
-			new_block->free = 0;
-		} else {
-			new_block = extend_block_size(last, position);
-			if (!new_block) {
-				pthread_mutex_unlock(&mutex);
-				return (NULL);
-			}
-		}
-	} else {
-		new_block = extend_block_size(NULL, position);
-		if (!new_block){
-			pthread_mutex_unlock(&mutex);
-			return (NULL);
-		}
-		g_head = new_block;
+        pthread_mutex_lock(&mutex);
+	new_block = get_empty_block(new_size);
+	if (new_block != NULL){
+		pthread_mutex_unlock(&mutex);
+		return (new_block);
 	}
+	ptr = sbrk(BLOCK_SIZE + new_size);
+	if (ptr == (void*) - 1){
+		pthread_mutex_unlock(&mutex);
+		return (NULL);
+	}
+	new_block = extend_memmory(new_block, ptr, new_size);
 	pthread_mutex_unlock(&mutex);
-	return (new_block->data);
+	return ((void*)(new_block + 1));
 }

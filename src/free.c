@@ -1,36 +1,44 @@
 /*
 ** EPITECH PROJECT, 2018
-** lib_malloc
+** malloc
 ** File description:
-** free source code
+** free function
 */
 
 #include <unistd.h>
-#include <pthread.h>
 #include "malloc.h"
 
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-void free(void *ptr)
+static void update_place()
 {
-	t_block *tmp = NULL;
+	block_t *tmp = g_head;
 
-	pthread_mutex_lock(&mutex);
-	if (validate_ptr_address(ptr)) {
-		tmp = get_block_by_ptr_address(ptr);
-		tmp->free = 1;
-		if (tmp->prev && tmp->prev->free) {
-			tmp = block_union(tmp->prev);
-		}
-		if (tmp->next) {
-			tmp = block_union(tmp);
-		} else {
-			if (tmp->prev) {
-				tmp->prev->next = NULL;
-			} else {
-				g_head = NULL;
+	if (g_head == g_last) {
+		g_head = NULL;
+		g_last = NULL;
+	} else {
+		while (tmp) {
+			if (tmp->next == g_last) {
+				tmp->next = NULL;
+				g_last = tmp;
 			}
-			brk(tmp);
+			tmp = tmp->next;
 		}
 	}
-	pthread_mutex_unlock(&mutex);
+}
+
+void free(void *ptr)
+{
+	void *last_pos;
+	block_t *new;
+
+	if (!ptr)
+		return;
+	new = (block_t*)ptr - 1;
+	last_pos = sbrk(0);
+	if ((char *)ptr + new->size == last_pos) {
+		update_place();
+		sbrk(-BLOCK_SIZE - new->size);
+		return;
+	}
+	new->free = 1;
 }
