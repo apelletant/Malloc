@@ -42,7 +42,7 @@ block_t *get_empty_block(size_t size)
 
 size_t align_size(size_t size)
 {
-	return ((size + 3) & ~3);
+	return ((size + 0xf) & ~0xf);
 }
 
 void *malloc(size_t size)

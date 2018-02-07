@@ -17,6 +17,8 @@ CFLAGS	=	-I ./include/		\
 		-W -Wall -Wextra	\
 		-fPIC
 
+LDFLAGS =	-pthread
+
 NAME 	=	libmy_malloc.so
 
 SRCS	=	main.c			\
@@ -30,7 +32,7 @@ OBJS	=	$(SRCS:.c=.o)
 all:	$(NAME)
 
 $(NAME): $(OBJS)
-		$(CC) -shared -o $(NAME) $(OBJS)
+		$(CC) -shared -o $(NAME) $(OBJS) $(LDFLAGS)
 
 clean:
 	$(RM) $(OBJS)

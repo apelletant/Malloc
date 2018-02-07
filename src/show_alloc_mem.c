@@ -18,7 +18,10 @@ void show_alloc_mem()
 	if (tmp) {
 		while (tmp) {
 			if (tmp->free == 0) {
-				printf("0x%lX - 0x%lX : %lu bytes\n", ((size_t)tmp + BLOCK_SIZE), ((size_t)tmp + BLOCK_SIZE) + tmp->size, tmp->size);
+				printf("0x%lX - 0x%lX : %lu bytes\n",
+				       ((size_t)tmp + BLOCK_SIZE),
+				       ((size_t)tmp + BLOCK_SIZE) + tmp->size,
+				       tmp->size);
 				tmp = tmp->next;
 			}
 		}
