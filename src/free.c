@@ -6,7 +6,10 @@
 */
 
 #include <unistd.h>
+#include <pthread.h>
 #include "malloc.h"
+
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static void update_place()
 {
@@ -33,12 +36,15 @@ void free(void *ptr)
 
 	if (!ptr)
 		return;
+	pthread_mutex_lock(&mutex);
 	new = (block_t*)ptr - 1;
 	last_pos = sbrk(0);
 	if ((char *)ptr + new->size == last_pos) {
 		update_place();
 		sbrk(-BLOCK_SIZE - new->size);
+		pthread_mutex_unlock(&mutex);
 		return;
 	}
 	new->free = 1;
+	pthread_mutex_unlock(&mutex);
 }

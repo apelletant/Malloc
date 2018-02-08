@@ -51,7 +51,9 @@ void *malloc(size_t size)
 	block_t *new_block = NULL;
 	size_t new_size = align_size(size);
 
-        pthread_mutex_lock(&mutex);
+	if (size == 0)
+		return (NULL);
+	pthread_mutex_lock(&mutex);
 	new_block = get_empty_block(new_size);
 	if (new_block != NULL){
 		pthread_mutex_unlock(&mutex);
