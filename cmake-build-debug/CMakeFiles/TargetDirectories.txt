@@ -1,3 +1,0 @@
-/home/invicta/Repo/Tek2/PSU_2017_malloc/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/invicta/Repo/Tek2/PSU_2017_malloc/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/invicta/Repo/Tek2/PSU_2017_malloc/cmake-build-debug/CMakeFiles/nts.dir
