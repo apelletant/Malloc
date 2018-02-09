@@ -14,16 +14,12 @@
 void *realloc(void *ptr, size_t size)
 {
 	void *new_ptr = NULL;
-	block_t *block_tmp = (block_t *)ptr -1;
+	block_t *block_tmp = (block_t *)ptr - 1;
 
 	if (!ptr) {
 		return (malloc(size));
 	}
-	if (size == 0 && block_tmp != NULL){
-		free(block_tmp);
-		return(NULL);
-	}
-	if (block_tmp->size >= size) {
+	else if (block_tmp->size >= size) {
 		return ptr;
 	}
 	new_ptr = malloc(size);

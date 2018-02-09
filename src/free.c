@@ -19,12 +19,12 @@ static void update_place()
 		g_head = NULL;
 		g_last = NULL;
 	} else {
-		while (tmp) {
-			if (tmp->next == g_last) {
-				tmp->next = NULL;
-				g_last = tmp;
-			}
+		while (tmp && tmp->next != g_last) {
 			tmp = tmp->next;
+		}
+		if (tmp && tmp->next == g_last) {
+			tmp->next = NULL;
+			g_last = tmp;
 		}
 	}
 }
@@ -34,17 +34,17 @@ void free(void *ptr)
 	void *last_pos;
 	block_t *new;
 
-	if (!ptr)
+	if (!ptr) {
 		return;
+	}
 	pthread_mutex_lock(&mutex);
-	new = (block_t*)ptr - 1;
+	new = (block_t *)ptr - 1;
 	last_pos = sbrk(0);
 	if ((char *)ptr + new->size == last_pos) {
 		update_place();
 		sbrk(-BLOCK_SIZE - new->size);
-		pthread_mutex_unlock(&mutex);
-		return;
+	} else {
+		new->free = 1;
 	}
-	new->free = 1;
 	pthread_mutex_unlock(&mutex);
 }

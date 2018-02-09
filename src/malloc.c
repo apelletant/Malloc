@@ -33,7 +33,7 @@ block_t *get_empty_block(size_t size)
 	while (tmp) {
 		if (tmp->free == 1 && tmp->size >= size) {
 			tmp->free = 0;
-			return ((void*)(tmp + 1));
+			return ((void *)(tmp + 1));
 		}
 		tmp = tmp->next;
 	}
@@ -47,24 +47,48 @@ size_t align_size(size_t size)
 
 void *malloc(size_t size)
 {
+	void *ret = NULL;
 	void *ptr = NULL;
 	block_t *new_block = NULL;
 	size_t new_size = align_size(size);
 
 	if (size == 0)
-		return (NULL);
+		return ret;
 	pthread_mutex_lock(&mutex);
 	new_block = get_empty_block(new_size);
-	if (new_block != NULL){
-		pthread_mutex_unlock(&mutex);
-		return (new_block);
+	if (new_block != NULL) {
+		ret = new_block;
+	} else {
+		ptr = sbrk(BLOCK_SIZE + new_size);
+		if (ptr != (void *)-1) {
+			new_block = extend_memmory(new_block, ptr, new_size);
+			ret = (void *)(new_block + 1);
+		}
 	}
-	ptr = sbrk(BLOCK_SIZE + new_size);
-	if (ptr == (void*) - 1){
-		pthread_mutex_unlock(&mutex);
-		return (NULL);
-	}
-	new_block = extend_memmory(new_block, ptr, new_size);
 	pthread_mutex_unlock(&mutex);
-	return ((void*)(new_block + 1));
+	return ret;
 }
+
+//void *malloc(size_t size)
+//{
+//	void *ptr = NULL;
+//	block_t *new_block = NULL;
+//	size_t new_size = align_size(size);
+//
+//	if (size == 0)
+//		return (NULL);
+//	pthread_mutex_lock(&mutex);
+//	new_block = get_empty_block(new_size);
+//	if (new_block != NULL){
+//		pthread_mutex_unlock(&mutex);
+//		return (new_block);
+//	}
+//	ptr = sbrk(BLOCK_SIZE + new_size);
+//	if (ptr == (void*) - 1){
+//		pthread_mutex_unlock(&mutex);
+//		return (NULL);
+//	}
+//	new_block = extend_memmory(new_block, ptr, new_size);
+//	pthread_mutex_unlock(&mutex);
+//	return ((void*)(new_block + 1));
+//}

@@ -15,15 +15,13 @@ void show_alloc_mem()
 
 	tmp = g_head;
 	printf("break: 0x%lX\n", (size_t)sbrk(0));
-	if (tmp) {
-		while (tmp) {
-			if (tmp->free == 0) {
-				printf("0x%lX - 0x%lX : %lu bytes\n",
-				       ((size_t)tmp + BLOCK_SIZE),
-				       ((size_t)tmp + BLOCK_SIZE) + tmp->size,
-				       tmp->size);
-				tmp = tmp->next;
-			}
+	while (tmp) {
+		if (tmp->free == 0) {
+			printf("0x%lX - 0x%lX : %lu bytes\n",
+				((size_t)tmp + BLOCK_SIZE),
+				((size_t)tmp + BLOCK_SIZE) + tmp->size,
+				tmp->size);
+			tmp = tmp->next;
 		}
 	}
 }
