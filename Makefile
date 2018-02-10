@@ -13,7 +13,11 @@ CP	=	cp -rf
 
 ARCHV	=	ar cr
 
-CFLAGS	=	-I ./include/		\
+MK	=	make
+
+TESTS	=	tests
+
+CFLAGS	=	-I include/		\
 		-W -Wall -Wextra	\
 		-fPIC
 
@@ -21,8 +25,7 @@ LDFLAGS =	-pthread
 
 NAME 	=	libmy_malloc.so
 
-SRCS	=	main.c			\
-		src/free.c		\
+SRCS	=	src/free.c		\
 		src/malloc.c		\
 		src/show_alloc_mem.c	\
 		src/realloc.c		\
@@ -32,13 +35,17 @@ OBJS	=	$(SRCS:.c=.o)
 all:	$(NAME)
 
 $(NAME): $(OBJS)
-		$(CC) -shared -o $(NAME) $(OBJS) $(LDFLAGS)
+	$(CC) -shared -o $(NAME) $(OBJS) $(LDFLAGS)
 
 clean:
 	$(RM) $(OBJS)
 
 fclean: clean
 	$(RM) $(NAME)
+
+tests_run: re
+	$(MK) -C $(TESTS)
+	LD_PRELOAD=$(NAME) ./$(TESTS)/$(TESTS)
 
 re:	fclean all
 
